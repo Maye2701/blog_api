@@ -20,4 +20,26 @@ router.get("/:id", (req, res)=>{
     res.json(author);
 });
 
+
+router.post("/", (req,res)=>{
+    const {name, email, bio} = req.body;
+
+    if(!name || !email){
+        return res.status(400).json({
+            message: "Nombre y email son obligatorios"
+        });
+    }
+
+    //crear nuevo autor
+    const newAuthor = {
+        id: authors.length +1,
+        name,
+        email,
+        bio: bio || ""
+    };
+
+    authors.push(newAuthor);
+
+    res.status(201).json(newAuthor);
+});
 export default router;
