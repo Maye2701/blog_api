@@ -21,6 +21,8 @@ router.get("/:id", (req, res)=>{
 });
 
 
+
+//endepoint POST
 router.post("/", (req,res)=>{
     const {name, email, bio} = req.body;
 
@@ -42,4 +44,38 @@ router.post("/", (req,res)=>{
 
     res.status(201).json(newAuthor);
 });
+
+//endepoint PUT actualizar autores
+router.put("/:id", (req,res)=>{
+    const {id} = req.params;
+    const {name, email, bio} = req.body;
+
+    const author = authors.find(a => a.id === parseInt(id));
+
+    //si existe
+    if(!author){
+        return res.status(401).json({
+            message: "Usuario no encontado"
+        });
+    }
+
+    //campos olbigatorios
+    if(!name || !email){
+        return res.status(400).json({
+            message: "Nombre y email son obligatorios"
+        });
+    }
+
+    author.name = name;
+    author.email = email;
+    author.bio = bio || "";
+
+    res.json({
+        message: "Autor actualizado correctamente",
+        author
+    });
+});
+
+
+
 export default router;
