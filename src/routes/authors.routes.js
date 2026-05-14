@@ -76,6 +76,28 @@ router.put("/:id", (req,res)=>{
     });
 });
 
+//endepoint Delete
+router.delete("/:id", (req, res)=>{
+    const {id} = req.params;
 
+    //buscar indice autor
+    const authorIndex = authors.findIndex(
+        a => a.id === parseInt(id)
+    );
+
+    if(authorIndex === -1){
+        return res.status(401).json({
+            message: "Usuario no encontado"
+        });
+    }
+
+    authors.splice(authorIndex, 1);
+
+    res.json({
+        message: "Autor elimnado correctamente"
+    });
+
+
+});
 
 export default router;
