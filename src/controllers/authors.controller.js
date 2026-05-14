@@ -1,7 +1,15 @@
-import authors from "../data/authors.js";
+
+import {
+    getAllAuthors,
+    getAuthorByIdService,
+    createAuthorService,
+    updateAuthorService,
+    deleteAuthorService
+}from "../services/authors.services.js";
 
 // GET todos
 export const getAuthors = (req, res) => {
+    const authors = getAllAuthors();
     res.json(authors);
 };
 
@@ -9,9 +17,7 @@ export const getAuthors = (req, res) => {
 export const getAuthorById = (req, res) => {
     const { id } = req.params;
 
-    const author = authors.find(
-        a => a.id === parseInt(id)
-    );
+    const author = getAuthorByIdService(id);
 
     if (!author) {
         return res.status(404).json({
@@ -24,7 +30,7 @@ export const getAuthorById = (req, res) => {
 
 // POST crear
 export const createAuthor = (req, res) => {
-    const { name, email, bio } = req.body;
+    const { name, email } = req.body;
 
     if (!name || !email) {
         return res.status(400).json({
@@ -32,14 +38,7 @@ export const createAuthor = (req, res) => {
         });
     }
 
-    const newAuthor = {
-        id: authors.length + 1,
-        name,
-        email,
-        bio: bio || ""
-    };
-
-    authors.push(newAuthor);
+    const newAuthor = createAuthorService(req.body);
 
     res.status(201).json(newAuthor);
 };
@@ -48,17 +47,7 @@ export const createAuthor = (req, res) => {
 export const updateAuthor = (req, res) => {
     const { id } = req.params;
 
-    const { name, email, bio } = req.body;
-
-    const author = authors.find(
-        a => a.id === parseInt(id)
-    );
-
-    if (!author) {
-        return res.status(404).json({
-            message: "Autor no encontrado"
-        });
-    }
+    const { name, email } = req.body;
 
     if (!name || !email) {
         return res.status(400).json({
@@ -66,13 +55,20 @@ export const updateAuthor = (req, res) => {
         });
     }
 
-    author.name = name;
-    author.email = email;
-    author.bio = bio || "";
+    const updatedAuthor = updateAuthorService(
+        id,
+        req.body
+    );
+
+    if (!updatedAuthor) {
+        return res.status(404).json({
+            message: "Autor no encontrado"
+        });
+    }
 
     res.json({
         message: "Autor actualizado correctamente",
-        author
+        updatedAuthor
     });
 };
 
@@ -80,17 +76,15 @@ export const updateAuthor = (req, res) => {
 export const deleteAuthor = (req, res) => {
     const { id } = req.params;
 
-    const authorIndex = authors.findIndex(
-        a => a.id === parseInt(id)
-    );
+    const deleted = deleteAuthorService(id);
 
-    if (authorIndex === -1) {
+    if (!deleted) {
         return res.status(404).json({
             message: "Autor no encontrado"
         });
     }
 
-    authors.splice(authorIndex, 1);
+
 
     res.json({
         message: "Autor eliminado correctamente"
