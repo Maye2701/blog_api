@@ -1,103 +1,24 @@
 import express from "express";
-import authors from "../data/authors.js";
+
+import {
+    getAuthors,
+    getAuthorById,
+    createAuthor,
+    updateAuthor,
+    deleteAuthor
+} from "../controllers/authors.controller.js";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-    res.json(authors);
-});
+router.get("/", getAuthors);
 
-router.get("/:id", (req, res)=>{
-    const {id} = req.params;
+router.get("/:id", getAuthorById);
 
-    const author = authors.find(a =>a.id === parseInt(id));
+router.post("/", createAuthor);
 
-    if(!author){
-        return res.status(404).json({
-            message: "Autor no encontrado"
-        });
-    }
-    res.json(author);
-});
+router.put("/:id", updateAuthor);
 
-
-
-//endepoint POST
-router.post("/", (req,res)=>{
-    const {name, email, bio} = req.body;
-
-    if(!name || !email){
-        return res.status(400).json({
-            message: "Nombre y email son obligatorios"
-        });
-    }
-
-    //crear nuevo autor
-    const newAuthor = {
-        id: authors.length +1,
-        name,
-        email,
-        bio: bio || ""
-    };
-
-    authors.push(newAuthor);
-
-    res.status(201).json(newAuthor);
-});
-
-//endepoint PUT actualizar autores
-router.put("/:id", (req,res)=>{
-    const {id} = req.params;
-    const {name, email, bio} = req.body;
-
-    const author = authors.find(a => a.id === parseInt(id));
-
-    //si existe
-    if(!author){
-        return res.status(401).json({
-            message: "Usuario no encontado"
-        });
-    }
-
-    //campos olbigatorios
-    if(!name || !email){
-        return res.status(400).json({
-            message: "Nombre y email son obligatorios"
-        });
-    }
-
-    author.name = name;
-    author.email = email;
-    author.bio = bio || "";
-
-    res.json({
-        message: "Autor actualizado correctamente",
-        author
-    });
-});
-
-//endepoint Delete
-router.delete("/:id", (req, res)=>{
-    const {id} = req.params;
-
-    //buscar indice autor
-    const authorIndex = authors.findIndex(
-        a => a.id === parseInt(id)
-    );
-
-    if(authorIndex === -1){
-        return res.status(401).json({
-            message: "Usuario no encontado"
-        });
-    }
-
-    authors.splice(authorIndex, 1);
-
-    res.json({
-        message: "Autor elimnado correctamente"
-    });
-
-
-});
+router.delete("/:id", deleteAuthor);
 
 export default router;
+
