@@ -6,15 +6,22 @@ CREATE TABLE authors (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE post (
+CREATE TABLE posts (
+
     id SERIAL PRIMARY KEY,
-    title VARCHAR(150) NOT NULL,
+
+    title VARCHAR(200) NOT NULL,
+
     content TEXT NOT NULL,
+
     author_id INTEGER NOT NULL,
+
     published BOOLEAN DEFAULT FALSE,
-    created_ad  TIMESTAMPTZ DEFAULT NOW().
+
+    created_at TIMESTAMPTZ DEFAULT NOW(),
 
     FOREIGN KEY (author_id)
     REFERENCES authors(id)
     ON DELETE CASCADE
+
 );

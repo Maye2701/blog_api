@@ -1,7 +1,8 @@
 import  express from "express";
 import dotenv from "dotenv";
 import authorsRoutes from "./routes/authors.routes.js";
-import pool from "../src/db/db.js"
+import pool from "./db/db.js";
+import postsRoutes from "./routes/posts.routes.js";
 
 dotenv.config();
 
@@ -15,13 +16,15 @@ app.get("/", (req, res)=>{
 
 app.use("/authors", authorsRoutes);
 
+app.use("/posts", postsRoutes);
+
 
 pool.connect()
     .then(()=>{
         console.log("conectado a postegresSQL");
     })
     .catch((error)=>{
-        console.log("eroro de conexion". error);
+        console.log("error de conexion", error);
     });
 
 const PORT = process.env.PORT || 3000;
