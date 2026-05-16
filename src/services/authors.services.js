@@ -1,60 +1,88 @@
-import authors from "../data/authors.js";
 
-export const getAllAuthors = ()=>{
-    return authors;
+import pool from "../db/db.js";
+
+// obtener autores
+export const getAllAuthors = async () => {
+
+    const result = await pool.query(
+        "SELECT * FROM authors"
+    );
+
+    return result.rows;
 };
+
 
 //OBTENER ID
-export const getAuthorByIdService = (id)=>{
-    return authors.find(
-        a => a.id === parseInt(id)
+export const getAuthorByIdService = async(id)=>{
+
+    const result = await pool.query(
+        "SELECT *FROM authors WHERE id =$1",
+        [id]
     );
+
+    return result.rows[0];
 };
 
+//CREAR AUTOR post
+export const createAuthorService = async(
+    
+    name,
+    email,
+    bio
+)=>{
 
-//CREAR AUTOR
-export const createAuthorService = (authorData)=>{
-    const newAuthor = {
-    id: authors.length + 1,
-    ...authorData,
-    bio: authorData.bio || ""
-    };
+    const result = await pool.query(
+        `
+        INSERT INTO authors(name, email, bio)
+        VALUES ($1, $2, $3)
+        RETURNING *
+        `,
+        [name, email, bio]
+    );
 
-    authors.push(newAuthor);
-
-    return newAuthor;
+    return result.rows[0];
 };
 
 //ACTUALIZAR AUTOR 
-export const updateAuthorService = (id, data)=>{
+export const updateAuthorService =  async (
     
-    const author = authors.find(
-        a => a.id === parseInt(id)
+    id,
+    name,
+    email,
+    bio
+)=>{
+
+    const result = await pool.query(
+        `
+        UPDATE authors
+        SET
+        name = $1,
+        email = $2,
+        bio = $3
+        WHERE id =$4
+        RETURNING *
+        `,
+        [name, email,bio, id]
     );
-
-    if (!author) {
-        return null;
-    }
-
-    author.name = data.name;
-    author.email = data.email;
-    author.bio = data.bio || "";
-
-    return author;
+    return result.rows[0];
 };
 
 
 //eliminar autor
-export const deleteAuthorService = (id)=>{
-    const authorIndex = authors.findIndex(
-        a => a.id === parseInt(id)
+export const deleteAuthorService = async (
+    name,
+    email,
+    bio
+
+)=>{
+    const result = await pool.query(
+        `
+        DELETE FROM authors
+        WHERE id =$1
+        RETURNING *
+        `,
+        [id]
     );
 
-    if (authorIndex === -1) {
-        return false;
-    }
-
-    authors.splice(authorIndex, 1);
-
-    return true;
-};
+    return result.rows[0];
+}; 

@@ -7,57 +7,107 @@ import {
     deleteAuthorService
 }from "../services/authors.services.js";
 
+
+
 // GET todos
-export const getAuthors = (req, res) => {
-    const authors = getAllAuthors();
-    res.json(authors);
+export const getAuthors = async (req, res) => {
+
+    try {
+
+        const authors = await getAllAuthors();
+
+        res.json(authors);
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: "Error al obtener autores"
+        });
+    }
 };
+
+
 
 // GET por ID
-export const getAuthorById = (req, res) => {
-    const { id } = req.params;
+export const getAuthorById = async(req, res) => {
 
-    const author = getAuthorByIdService(id);
+    try{
 
-    if (!author) {
-        return res.status(404).json({
-            message: "Autor no encontrado"
+        const { id } = req.params;
+
+        const author = await getAuthorByIdService(id);
+
+        if (!author) {
+            return res.status(404).json({
+                message: "Autor no encontrado"
+            });
+        }
+
+        res.json(author);
+    } catch(error){
+
+        res.status(500).json({
+            message: "Error al obtener autor"
         });
     }
-
-    res.json(author);
 };
+
+
 
 // POST crear
-export const createAuthor = (req, res) => {
-    const { name, email } = req.body;
+export const createAuthor = async (req, res) => {
 
-    if (!name || !email) {
-        return res.status(400).json({
-            message: "Nombre y email son obligatorios"
+    try {
+
+        const { name, email, bio } = req.body;
+
+        if (!name || !email) {
+            return res.status(400).json({
+                message: "Nombre y email son obligatorios"
         });
     }
 
-    const newAuthor = createAuthorService(req.body);
+    const newAuthor = await createAuthorService(
+        name,
+        email,
+        bio
+    );
 
     res.status(201).json(newAuthor);
+
+    } catch(error){
+        console.log(error);
+
+        res.status(500).json({
+            message: "Error al crear autor",
+            error: error.message
+        });
+    }
+    
 };
 
+
+
 // PUT actualizar
-export const updateAuthor = (req, res) => {
-    const { id } = req.params;
+export const updateAuthor = async (req, res) => {
 
-    const { name, email } = req.body;
+    try {
 
-    if (!name || !email) {
-        return res.status(400).json({
-            message: "Nombre y email son obligatorios"
+        const { id } = req.params;
+
+        const { name, email, bio } = req.body;
+
+        if (!name || !email) {
+            return res.status(400).json({
+                message: "Nombre y email son obligatorios"
         });
     }
 
-    const updatedAuthor = updateAuthorService(
+    const updatedAuthor = await updateAuthorService(
         id,
-        req.body
+        name,
+        email,
+        bio
     );
 
     if (!updatedAuthor) {
@@ -70,23 +120,38 @@ export const updateAuthor = (req, res) => {
         message: "Autor actualizado correctamente",
         updatedAuthor
     });
-};
 
-// DELETE
-export const deleteAuthor = (req, res) => {
-    const { id } = req.params;
-
-    const deleted = deleteAuthorService(id);
-
-    if (!deleted) {
-        return res.status(404).json({
-            message: "Autor no encontrado"
+    } catch (error){
+        res.status(500).json({
+            message: "Error al actualizar autor"
         });
     }
+};
 
 
+
+// DELETE
+export const deleteAuthor = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+        const deletedAuthor = 
+            await deleteAuthorService(id);
+
+        if (!deletedAuthor) {
+            return res.status(404).json({
+                message: "Autor no encontrado"
+        });
+    }
 
     res.json({
         message: "Autor eliminado correctamente"
     });
+
+} catch (error){
+        res.status(500).json({
+            message: "Error al eliminar autor"
+        });
+    }
 };
