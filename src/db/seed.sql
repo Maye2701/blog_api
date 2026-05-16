@@ -15,3 +15,25 @@ VALUES
     'maria@example.com',
     'REST API specialist'
 );
+
+INSERT INTO posts
+(title, content, author_id, published)
+VALUES
+(
+    'Introducción a Node.js',
+    'Node.js es un runtime de JavaScript',
+    1,
+    true
+),
+(
+    'PostgreSQL vs MySQL',
+    'Ambas bases de datos tienen ventajas',
+    2,
+    true
+),
+(
+    'APIs RESTful',
+    'REST es un estilo arquitectónico',
+    1,
+    false
+);
