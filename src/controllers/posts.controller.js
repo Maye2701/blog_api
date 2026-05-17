@@ -64,7 +64,7 @@ export const createPost = async (req, res) => {
                 published
             } = req.body;
 
-        if (!title || !content || !author_id) {
+        if (!title?.trim() || !content?.trim() || !author_id) {
             return res.status(400).json({
                 message: "titulo, contenido y id autor son obligatorios"
         });
